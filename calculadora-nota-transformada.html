@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Nota Transformada</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --color-primario: #4A90E2;
+      --color-fondo: #f2f4f8;
+      --color-texto: #333;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--color-fondo);
+      color: var(--color-texto);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .contenedor {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      color: var(--color-primario);
+      text-align: center;
+    }
+
+    label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--color-primario);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor">
+    <h2>Calculadora de Nota Transformada</h2>
+
+    <label for="grupo">Grupo:</label>
+    <select id="grupo">
+      <option value="general">Promoción General</option>
+      <option value="cupo">Cupo Base Específica 5</option>
+    </select>
+
+    <label for="parte">Parte del examen:</label>
+    <select id="parte">
+      <option value="1">Primera Parte</option>
+      <option value="2">Segunda Parte</option>
+    </select>
+
+    <label for="aciertos">Número de aciertos:</label>
+    <input type="number" id="aciertos" step="1" min="0" placeholder="Ej: 40">
+
+    <label for="errores">Número de errores:</label>
+    <input type="number" id="errores" step="1" min="0" placeholder="Ej: 5">
+
+    <button onclick="calcular()">Calcular Nota</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    function calcular() {
+      const grupo = document.getElementById('grupo').value;
+      const parte = document.getElementById('parte').value;
+      const aciertos = parseInt(document.getElementById('aciertos').value);
+      const errores = parseInt(document.getElementById('errores').value);
+
+      if (isNaN(aciertos) || isNaN(errores) || aciertos < 0 || errores < 0) {
+        document.getElementById('resultado').textContent = "Por favor, introduce valores válidos para aciertos y errores.";
+        return;
+      }
+
+      const penalización = errores / 3;
+      const d = Math.max(0, aciertos - penalización);
+
+      const E = 50;
+      let M, N;
+
+      if (grupo === "general") {
+        if (parte === "1") {
+          M = 33.33;
+          N = 70;
+        } else {
+          M = 14;
+          N = 20;
+        }
+      } else {
+        if (parte === "1") {
+          M = 21;
+          N = 70;
+        } else {
+          M = 9.67;
+          N = 20;
+        }
+      }
+
+      let t;
+      if (d < M) {
+        t = (E / 2) * (d / M);
+      } else {
+        t = (E / 2) * (1 + ((d - M) / (N - M)));
+      }
+
+      t = Math.round(t * 100) / 100;
+      const aprobado = d >= M;
+
+      document.getElementById('resultado').innerHTML =
+        `Puntuación directa: <strong>${d.toFixed(2)}</strong><br>` +
+        `Nota transformada: <strong>${t}</strong><br>` +
+        (aprobado
+          ? "<span style='color:green'>¡Supera la nota de corte!</span>"
+          : "<span style='color:red'>No supera la nota de corte.</span>");
+    }
+  </script>
+
+</body>
+</html>
